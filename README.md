@@ -11,6 +11,10 @@ Group photos appear in the introduction and About section, with six performance
 photos in the gallery. Portraits are not assigned to members without confirmed
 identifications. Gallery photos open at their original size when selected.
 
+The Contact Us page at `/contact/` states that the contact email address has not
+been set yet. It does not accept or send messages. The separate Voice Mentor
+website-support email remains in the footer.
+
 ## Development
 
 Requires Node 22 or newer (Render uses Node 24.19.0).
