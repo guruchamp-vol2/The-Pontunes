@@ -15,7 +15,7 @@ test('the deployed public directory contains a working homepage and stylesheet',
   const html = await response.text();
   assert.match(html, /<title>The Pontunes/);
   assert.match(html, /href="\/style.css"/);
-  for (const anchor of ['home', 'about', 'updates', 'contact']) {
+  for (const anchor of ['home', 'about', 'music', 'members']) {
     assert.ok(html.includes(`id="${anchor}"`));
   }
   const style = await fetch(base + '/style.css');

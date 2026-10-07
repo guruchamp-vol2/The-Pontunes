@@ -1,7 +1,8 @@
 # The Pontunes
 
 Node static web service prepared for Render, with a responsive Pontunes homepage
-and links to the band's Facebook page. The reference website at
+featuring the Pacific Northwest band's background, repertoire, member list, official
+website link, and a small Voice Mentor site-support note. The reference website at
 https://www.pontunesmusic.com/ currently displays a Squarespace expiration page.
 This is an original landing page, not a verified replica of its former design.
 
@@ -22,10 +23,12 @@ Health checks alone do not establish website readiness.
 
 ## Render
 
-After the reference website is implemented and the repository is pushed to
-GitHub, create a Render Blueprint using `render.yaml`, or create a Node web
+Create a Render Blueprint using `render.yaml`, or create a Node web
 service with build command `npm ci`, start command `npm start`, and health check
 path `/healthz`. No credentials are required by the static server.
+
+For the existing service, pushes to `main` deploy when Render auto-deploy is
+enabled. Otherwise use **Manual Deploy → Deploy latest commit** in Render.
 
 Before deployment, validate the homepage, navigation, images, responsive layout,
 and any reference-site features. A static copy cannot reproduce backend features
