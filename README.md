@@ -6,6 +6,11 @@ website link, and a small Voice Mentor site-support note. The reference website 
 https://www.pontunesmusic.com/ currently displays a Squarespace expiration page.
 This is an original landing page, not a verified replica of its former design.
 
+The eight supplied band photographs are served locally from `public/images/`.
+Group photos appear in the introduction and About section, with six performance
+photos in the gallery. Portraits are not assigned to members without confirmed
+identifications. Gallery photos open at their original size when selected.
+
 ## Development
 
 Requires Node 22 or newer (Render uses Node 24.19.0).

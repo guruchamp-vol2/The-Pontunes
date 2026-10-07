@@ -15,13 +15,23 @@ test('the deployed public directory contains a working homepage and stylesheet',
   const html = await response.text();
   assert.match(html, /<title>The Pontunes/);
   assert.match(html, /href="\/style.css"/);
-  for (const anchor of ['home', 'about', 'music', 'members']) {
+  for (const anchor of ['home', 'about', 'music', 'members', 'photos']) {
     assert.ok(html.includes(`id="${anchor}"`));
   }
   const style = await fetch(base + '/style.css');
   assert.equal(style.status, 200);
   assert.match(style.headers.get('content-type'), /text\/css/);
   assert.ok((await style.text()).includes('@media(max-width:760px)'));
+  const images = [...html.matchAll(/<img[^>]+src="([^"]+)"/g)];
+  assert.equal(images.length, 8);
+  for (const [, src] of images) {
+    const photo = await fetch(base + src);
+    assert.equal(photo.status, 200, src);
+    assert.match(photo.headers.get('content-type'), /image\/jpeg/);
+    const bytes = new Uint8Array(await photo.arrayBuffer());
+    assert.equal(bytes[0], 0xff, src);
+    assert.equal(bytes[1], 0xd8, src);
+  }
 });
 
 test('serves pages and assets, handles HEAD, and prevents access outside public', async t => {
