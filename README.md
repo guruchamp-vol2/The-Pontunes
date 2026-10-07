@@ -1,8 +1,9 @@
 # The Pontunes
 
-Node static web service prepared for Render. The reference website has not yet
-been imported: `public/` is intentionally empty pending access to
-https://www.pontunesmusic.com/. This repository does not yet contain a replica.
+Node static web service prepared for Render, with a responsive Pontunes homepage
+and links to the band's Facebook page. The reference website at
+https://www.pontunesmusic.com/ currently displays a Squarespace expiration page.
+This is an original landing page, not a verified replica of its former design.
 
 ## Development
 
@@ -16,8 +17,8 @@ npm start
 
 The server uses `PORT` (default 3000) and binds to `0.0.0.0`.
 `GET /healthz` reports process health. Pages and assets are served from `public/`;
-directory requests resolve to `index.html`. Until reference pages are added,
-`/` returns 404. Health checks alone do not establish website readiness.
+directory requests resolve to `index.html`. `/` serves the Pontunes homepage.
+Health checks alone do not establish website readiness.
 
 ## Render
 

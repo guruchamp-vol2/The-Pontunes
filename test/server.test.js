@@ -5,6 +5,25 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createServer } from '../server.js';
 
+test('the deployed public directory contains a working homepage and stylesheet', async t => {
+  const server = createServer();
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const response = await fetch(base + '/');
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /<title>The Pontunes/);
+  assert.match(html, /href="\/style.css"/);
+  for (const anchor of ['home', 'about', 'updates', 'contact']) {
+    assert.ok(html.includes(`id="${anchor}"`));
+  }
+  const style = await fetch(base + '/style.css');
+  assert.equal(style.status, 200);
+  assert.match(style.headers.get('content-type'), /text\/css/);
+  assert.ok((await style.text()).includes('@media(max-width:760px)'));
+});
+
 test('serves pages and assets, handles HEAD, and prevents access outside public', async t => {
   const temp = await mkdtemp(path.join(tmpdir(), 'pontunes-test-'));
   const root = path.join(temp, 'public');
