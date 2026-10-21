@@ -121,3 +121,52 @@ test('a failed storage write preserves published content and corrupt storage fai
   await writeFile(path.join(dataDir, 'content.json'), 'invalid JSON');
   assert.throws(() => createServer(undefined, { dataDir }), SyntaxError);
 });
+
+test('contact email settings are protected, validated, persistent, and removable', async t => {
+  const { request, post, login, restart, dataDir } = await fixture(t);
+  const original = await (await request('/contact/')).text();
+  assert.match(original, /Email not set yet/);
+  assert.match(await (await request('/admin/settings/')).text(), /Admin sign in/);
+  assert.equal((await post('/admin/settings/', { contactEmail: 'band@example.com' })).status, 403);
+  const { csrf, cookie } = await login();
+  assert.match(await (await request('/admin/', { headers: { Cookie: cookie } })).text(), /href="\/admin\/settings\/"/);
+  const settings = await (await request('/admin/settings/', { headers: { Cookie: cookie } })).text();
+  assert.match(settings, /name="contactEmail"/);
+  assert.equal((await post('/admin/settings/', { csrf: 'bad', contactEmail: 'band@example.com' }, cookie)).status, 403);
+  assert.equal((await post('/admin/settings/', { csrf, contactEmail: 'band@example.com' }, cookie, { Origin: 'https://evil.example' })).status, 403);
+  for (const email of ['not-an-email', 'a@example.com\r\nBcc:evil@example.com', '"><script>alert(1)</script>@example.com', 'a@-bad.example', 'a..b@example.com']) {
+    const invalid = await post('/admin/settings/', { csrf, contactEmail: email }, cookie);
+    assert.equal(invalid.status, 400, email);
+    assert.ok(!(await invalid.text()).includes('<script>'));
+  }
+  assert.equal(await (await request('/contact/')).text(), original);
+  // Existing content files without settings remain valid; a settings save preserves entries.
+  assert.equal((await post('/admin/save', { csrf, kind: 'news', title: 'Keep this news', date: '2027-01-01' }, cookie)).status, 303);
+  const email = "band+bookings@example.com";
+  const saved = await post('/admin/settings/', { csrf, contactEmail: ` ${email} ` }, cookie);
+  assert.equal(saved.status, 303);
+  assert.equal(saved.headers.get('location'), '/admin/settings/?saved=1');
+  const publicContact = await (await request('/contact/')).text();
+  assert.ok(publicContact.includes(`href="mailto:${encodeURIComponent(email)}"`));
+  assert.ok(publicContact.includes(`>${email}</a>`));
+  assert.doesNotMatch(publicContact, /Email not set yet/);
+  assert.match(publicContact, /contact-notice/);
+  assert.match(publicContact, /dhruvbajaj3000@gmail.com/);
+  assert.equal(await (await request('/contact/index.html')).text(), publicContact);
+  assert.equal(await (await request('/contact/', { method: 'HEAD' })).text(), '');
+  assert.equal((await request('/contact/', { method: 'POST' })).status, 405);
+  await restart();
+  assert.equal(await (await request('/contact/')).text(), publicContact);
+  assert.match(await (await request('/news/')).text(), /Keep this news/);
+  const fresh = await login();
+  const reloadedSettings = await (await request('/admin/settings/', { headers: { Cookie: fresh.cookie } })).text();
+  assert.ok(reloadedSettings.includes(`value="${email}"`));
+  // Failed writes leave the currently published contact address intact.
+  await mkdir(path.join(dataDir, 'content.json.tmp'));
+  assert.equal((await post('/admin/settings/', { csrf: fresh.csrf, contactEmail: 'other@example.com' }, fresh.cookie)).status, 500);
+  assert.equal(await (await request('/contact/')).text(), publicContact);
+  await rm(path.join(dataDir, 'content.json.tmp'), { recursive: true });
+  assert.equal((await post('/admin/settings/', { csrf: fresh.csrf, contactEmail: '' }, fresh.cookie)).status, 303);
+  await restart();
+  assert.equal(await (await request('/contact/')).text(), original);
+});

@@ -11,9 +11,10 @@ Group photos appear in the introduction and About section, with six performance
 photos in the gallery. Portraits are not assigned to members without confirmed
 identifications. Gallery photos open at their original size when selected.
 
-The Contact Us page at `/contact/` states that the contact email address has not
-been set yet. It does not accept or send messages. The separate Voice Mentor
-website-support email remains in the footer.
+The Contact Us page at `/contact/` displays the band contact email configured in
+the admin page. Until an address is saved, it shows the email-not-set notice.
+Visitors can open their email app using the address link; the site does not send
+messages itself. The separate Voice Mentor website-support email remains in the footer.
 
 ## Development
 
@@ -96,3 +97,16 @@ deployment are changed by the local tests. `npm test` covers authenticated CRUD,
 CSRF, validation, escaping, login throttling, restart persistence, static-file
 protection, the contact page, and all eight photographs. There is no build step
 or third-party runtime dependency.
+
+### Configure the contact email
+
+Sign in at `/admin/` and choose **Contact email**. Enter the band's email address
+and select **Save contact email**. The address appears immediately on `/contact/`
+as a clickable email link. Leave the field blank and save to restore the
+email-not-set notice. Settings share the existing persistent disk with shows and
+news, survive restarts, and use the same authentication and CSRF protection.
+Existing content files are supported without migration.
+
+This publishes an address for an existing mailbox. It does not create a mailbox,
+configure SMTP, or send email from the site. The Voice Mentor support address in
+the footer is separate and is not changed by this setting.
