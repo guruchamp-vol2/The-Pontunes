@@ -44,7 +44,7 @@ test('serves pages and assets, handles HEAD, and prevents access outside public'
   await writeFile(path.join(root, 'style.css'), 'body { color: red; }');
   await writeFile(path.join(temp, 'private.txt'), 'private');
   await symlink(path.join(temp, 'private.txt'), path.join(root, 'escape.txt'));
-  const server = createServer(root);
+  const server = createServer(root, { cms: false });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   t.after(async () => {
     await new Promise(resolve => server.close(resolve));

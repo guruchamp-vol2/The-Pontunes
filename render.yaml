@@ -2,10 +2,20 @@ services:
   - type: web
     name: the-pontunes
     runtime: node
-    plan: free
+    plan: starter
     buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /healthz
+    disk:
+      name: pontunes-content
+      mountPath: /var/data/pontunes
+      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: 24.19.0
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data/pontunes
+      - key: ADMIN_PASSWORD
+        sync: false

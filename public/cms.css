@@ -1,0 +1,14 @@
+.content-page { padding-block: 48px 72px; min-height: 65vh; }
+.content-page h1 { font-size: clamp(38px, 6vw, 64px); }
+.content-page form { max-width: 680px; margin-block: 24px; }
+.content-page label { display: block; margin-block: 18px; color: var(--muted); font-size: 14px; }
+.content-page input:not([type=checkbox]), .content-page textarea { display: block; width: 100%; margin-top: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--text); font: inherit; }
+.content-page input:focus-visible, .content-page textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.content-page button { cursor: pointer; font: inherit; border: 1px solid var(--border); border-radius: 6px; padding: 10px 18px; }
+.content-page .button { border: 0; margin-top: 0; }
+.content-page .danger { background: #993e35; }
+.admin-tabs { margin-block: 32px; }
+.entry { border-top: 1px solid var(--border); margin-top: 28px; padding-top: 24px; overflow-wrap: anywhere; }
+.entry p { color: var(--muted); line-height: 1.8; }
+.entry-details { white-space: pre-wrap; }
+.text-link, .content-page form a { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }

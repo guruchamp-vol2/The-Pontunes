@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { createCMS } from './cms.js';
 import { createReadStream } from 'node:fs';
 import { realpath, stat } from 'node:fs/promises';
 import path from 'node:path';
@@ -14,12 +15,14 @@ const types = {
   '.mp3': 'audio/mpeg', '.mp4': 'video/mp4', '.txt': 'text/plain; charset=utf-8',
 };
 
-export function createServer(root = defaultRoot) {
+export function createServer(root = defaultRoot, options = {}) {
+  const cms = options.cms === false ? null : createCMS({ root: defaultRoot, ...options });
   return http.createServer(async (req, res) => {
     const respond = (code, body) => {
       res.writeHead(code, { 'Content-Type': 'text/plain; charset=utf-8' });
       res.end(req.method === 'HEAD' ? undefined : body);
     };
+    if (cms && await cms(req, res)) return;
     if (!['GET', 'HEAD'].includes(req.method)) {
       res.setHeader('Allow', 'GET, HEAD');
       return respond(405, 'Method not allowed\n');
